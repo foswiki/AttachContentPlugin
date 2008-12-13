@@ -13,7 +13,7 @@ Pass filename, topic, web or comment as parameters.
 
 The current version only refreshes the attachment when the topic is saved. Obviously this means that the attachment can get out of synch if, for example, it explicitly or implicitly refers to other topics.
 
-This plugin is written specifically to be able to put css into topic(s) and still be able to have efficient stylesheets: i.e., without the overhead of TWiki processing. The feature can be used for many other things where you want TWiki to generate a plain text file a smart way. %BR%
+This plugin is written specifically to be able to put css into topic(s) and still be able to have efficient stylesheets: i.e., without the overhead of Foswiki processing. The feature can be used for many other things where you want Foswiki to generate a plain text file a smart way. %BR%
 For example: write a =SEARCH= in a topic and save the search results to an XML file. The XML data can be used for efficient look-up.
 
 ---++ Syntax Rules
@@ -76,10 +76,10 @@ Plugin settings are stored as preferences variables. To reference a plugin setti
 
 ---++ Plugin Installation Instructions
 
-__Note:__ You do not need to install anything on the browser to use this plugin. The following instructions are for the administrator who installs the plugin on the server where TWiki is running. 
+__Note:__ You do not need to install anything on the browser to use this plugin. The following instructions are for the administrator who installs the plugin on the server where Foswiki is running. 
 
    * Download the ZIP file from the Plugin web (see below)
-   * Unzip ==%TOPIC%.zip== in your twiki installation directory. Content:
+   * Unzip ==%TOPIC%.zip== in your Foswiki installation directory. Content:
      | *File:* | *Description:* |
      | ==data/System/%TOPIC%.txt== | Plugin topic |
      | ==data/System/%TOPIC%.txt,v== | Plugin topic repository |
@@ -89,15 +89,14 @@ __Note:__ You do not need to install anything on the browser to use this plugin.
 
 ---++ Plugin Info
 
-|  Copyright: | &copy; TWiki:Main.MeredithLesly, TWiki:Main.KennethLavrsen, TWiki:Main.ArthurClemens |
+|  Copyright: | &copy; TWiki:Main.MeredithLesly, Foswiki:Main.KennethLavrsen, Foswiki:Main.ArthurClemens |
 |  Plugin Version: | 23 Nov 2008 (V2.2.1) |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
 |  23 Nov 2008 (2.2.1) | Foswiki compatible. |
 |  16 Apr 2007 (2.2.0) | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
 |  15 Apr 2007 (2.1.0) | Arthur Clemens: added parameters =web=, =topic=, =comment= and =hide=. Plugin tags are removed from view. Added configurable default comment. |
-|  19 Oct 2006 (2.0) | TWiki:Main.KennethLavrsen<br />Fixed major security issue. Original version allowed /../ in the filename so files could be stored everywhere<br />Plugin now cleans up the its work area and no longer leaves temporary files<br />Temporary filenames made pseudo random to avoid race condition<br />Plugin now also removed nops and TML square bracket links<br />Attachment is no longer saved when uploading other files and changing attributes. |
+|  19 Oct 2006 (2.0) | Foswiki:Main.KennethLavrsen<br />Fixed major security issue. Original version allowed /../ in the filename so files could be stored everywhere<br />Plugin now cleans up the its work area and no longer leaves temporary files<br />Temporary filenames made pseudo random to avoid race condition<br />Plugin now also removed nops and TML square bracket links<br />Attachment is no longer saved when uploading other files and changing attributes. |
 |  09 Feb 2006 (1.0) | Initial version |
-|  TWiki Dependency: | $Foswiki::Plugins::VERSION 1.1 |
 |  CPAN Dependencies: | none |
 |  Other Dependencies: | none |
 |  Perl Version: | 5.005 |
