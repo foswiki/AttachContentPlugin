@@ -1,7 +1,7 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
 # Copyright (c) 2008 Foswiki Contributors
-# Copyright (c) 2007 Arthur Clemens
+# Copyright (c) 2007,2009 Arthur Clemens
 # Copyright (c) 2006 Meredith Lesly, Kenneth Lavrsen
 # and TWiki Contributors. All Rights Reserved.
 # Contributors are listed in the AUTHORS file in the root of this distribution.
@@ -23,184 +23,208 @@ package Foswiki::Plugins::AttachContentPlugin;
 
 # Always use strict to enforce variable scoping
 use strict;
-
-# $VERSION is referred to by Foswiki, and is the only global variable that
-# *must* exist in this package
-use vars qw( $VERSION $RELEASE $debug $pluginName );
-use vars qw( $savedAlready $defaultKeepPars $defaultComment ); 
+use Foswiki::Func;
 
 # This should always be $Rev: 11069$ so that Foswiki can determine the checked-in
 # status of the plugin. It is used by the build automation tools, so
 # you should leave it alone.
-$VERSION = '$Rev: 11069$';
-$RELEASE = '2.2.1';
+our $VERSION = '$Rev: 11069$';
+our $RELEASE = '2.3';
+
+# Short description of this plugin
+# One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
+our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
+our $NO_PREFS_IN_TOPIC = 1;
 
 # Name of this Plugin, only used in this module
-$pluginName = 'AttachContentPlugin';
+my $pluginName = 'AttachContentPlugin';
+my $savedAlready;
 
 sub initPlugin {
-    my( $topic, $web, $user, $installWeb ) = @_;
+    my ( $topic, $web, $user, $installWeb ) = @_;
 
     # check for Plugins.pm versions
-    if( $Foswiki::Plugins::VERSION < 1.026 ) {
-        Foswiki::Func::writeWarning( "Version mismatch between $pluginName and Plugins.pm" );
+    if ( $Foswiki::Plugins::VERSION < 1.026 ) {
+        Foswiki::Func::writeWarning(
+            "Version mismatch between $pluginName and Plugins.pm");
         return 0;
     }
 
-    $debug = Foswiki::Func::getPreferencesFlag("ATTACHCONTENTPLUGIN_DEBUG");
-    $defaultKeepPars = Foswiki::Func::getPreferencesFlag("ATTACHCONTENTPLUGIN_KEEPPARS") || 0;
-    $defaultComment = Foswiki::Func::getPreferencesValue("ATTACHCONTENTPLUGIN_ATTACHCONTENTCOMMENT") || '';
+    _initVariables();
 
-    # Plugin correctly initialized
+    Foswiki::Func::registerTagHandler( 'STARTATTACH', \&_startAttach );
+    Foswiki::Func::registerTagHandler( 'ENDATTACH',   \&_endAttach );
+
     return 1;
 }
 
 =pod
 
----++ commonTagsHandler($text, $topic, $web )
-
-Only implemented to remove the plugin tags from topic view
-
 =cut
 
-sub commonTagsHandler {
-    $_[0] =~ s/%STARTATTACH{.*?}%//gs;
-    $_[0] =~ s/%ENDATTACH%//gs;
-}
-
-=pod
-
----++ afterSaveHandler($text, $topic, $web, $error, $meta )
-   * =$text= - the text of the topic _excluding meta-data tags_
-     (see beforeSaveHandler)
-   * =$topic= - the name of the topic in the current CGI query
-   * =$web= - the name of the web in the current CGI query
-   * =$error= - any error string returned by the save.
-   * =$meta= - the metadata of the saved topic, represented by a Foswiki::Meta object 
-
-This handler is called each time a topic is saved.
-
-__NOTE:__ meta-data is embedded in $text (using %META: tags)
-
-__Since:__ Foswiki::Plugins::VERSION = '1.020'
-
-=cut
-
-sub afterSaveHandler {
-    # do not uncomment, use $_[0], $_[1]... instead
-    ### my ( $text, $topic, $web, $error, $meta ) = @_;
-
-    my $query = Foswiki::Func::getCgiQuery();
-    
-    # Do not run plugin when managing attachments.
-    if( ( $query ) && ( $ENV{'SCRIPT_NAME'} ) && ( $ENV{'SCRIPT_NAME'} =~ /^.*\/upload/ ) ) {
-    	return;
-    }
-
-    return if $savedAlready;
-    $savedAlready = 1;
-
-    Foswiki::Func::writeDebug( "- ${pluginName}::afterSaveHandler( $_[2].$_[1] )" ) if $debug;
-
-    $_[0] =~ s/%STARTATTACH{(.*?)}%(.*?)%ENDATTACH%/&handleAttach($1, $2, $_[2], $_[1])/ges;
+sub _initVariables {
     $savedAlready = 0;
 }
 
 =pod
 
----++ handleAttach($inAttr, $inContent, $inWeb, $inTopic)
+=cut
 
-inweb	''
-intopic WebHome
+sub beforeCommonTagsHandler {
 
-inweb Main
-intopic WebHome
+    #my ($text, $topic, $web, $meta ) = @_;
 
-inweb ''
-intopic ''
+    $_[0] =~
+s/%STARTATTACH{(.*?)}%(.*?)%ENDATTACH%/&_handleAttachBeforeRendering($1, $2, $_[2], $_[1])/ges;
+}
 
+=pod
 
+_handleAttachBeforeRendering($attributes, $content, $web, $topic)
+
+Removes content if param hidecontent is true.
 
 =cut
 
-sub handleAttach {
+sub _handleAttachBeforeRendering {
+    my ( $inAttr, $inContent, $inWeb, $inTopic ) = @_;
 
-    my ($inAttr, $inContent, $inWeb, $inTopic) = @_;
+    my $attrs =
+      Foswiki::Func::expandCommonVariables( $inAttr, $inTopic, $inWeb );
+    my %params = Foswiki::Func::extractParameters($attrs);
+    return '' if Foswiki::Func::isTrue( $params{'hidecontent'} );
+    return $inContent;
+}
 
-    my $attrs = Foswiki::Func::expandCommonVariables($inAttr, $inTopic, $inWeb);
+=pod
+
+---++ afterSaveHandler($text, $topic, $web, $error, $meta )
+
+=cut
+
+sub afterSaveHandler {
+
+    # do not uncomment, use $_[0], $_[1]... instead
+    ### my ( $text, $topic, $web, $error, $meta ) = @_;
+
+    _debug("afterSaveHandler");
+
+    my $query = Foswiki::Func::getCgiQuery();
+
+    # Do not run plugin when managing attachments.
+    # SMELL: does afterSaveHandler get called in this situation?
+    return if Foswiki::Func::getContext()->{'upload'};
+
+    return if $savedAlready;
+    $savedAlready = 1;
+
+    _debug("sub afterSaveHandler( $_[2].$_[1] )");
+
+    $_[0] =~
+s/%STARTATTACH{(.*?)}%(.*?)%ENDATTACH%/&_handleAttach($1, $2, $_[2], $_[1])/ges;
+    $savedAlready = 0;
+
+    return;
+}
+
+=pod
+
+_handleAttach($attributes, $content, $web, $topic)
+
+=cut
+
+sub _handleAttach {
+    my ( $inAttr, $inContent, $inWeb, $inTopic ) = @_;
+
+    _debug("sub handleAttach; attr=$inAttr; content=$inContent");
+
+    my $attrs =
+      Foswiki::Func::expandCommonVariables( $inAttr, $inTopic, $inWeb );
     my %params = Foswiki::Func::extractParameters($attrs);
 
     my $attrFileName = $params{_DEFAULT};
     return '' unless $attrFileName;
-    
-    my $web = $params{'web'} || $inWeb;
+
+    my $web   = $params{'web'}   || $inWeb;
     my $topic = $params{'topic'} || $inTopic;
-    my $comment = $defaultComment;
-    $comment = $params{'comment'} if defined($params{'comment'});
-    my $hide = defined($params{'hide'}) && ( $params{'hide'} eq 'on' );
-    my $keepPars = $params{'keeppars'};
-    if ( defined($keepPars) ) {
-        $keepPars = $keepPars eq 'on';
-    } else {
-        $keepPars = $defaultKeepPars;
-    }
-    
+    my $comment = $params{'comment'}
+      || $Foswiki::cfg{Plugins}{AttachContentPlugin}{AttachmentComment};
+    my $hide = Foswiki::Func::isTrue( $params{'hide'} );
+    my $keepPars =
+      Foswiki::Func::isTrue( $params{'keeppars'}
+          || $Foswiki::cfg{Plugins}{AttachContentPlugin}{KeepPars} );
     my $workArea = Foswiki::Func::getWorkArea($pluginName);
 
+    ($web)      ? _debug("\t web: $web")           : _debug("\t no web");
+    ($topic)    ? _debug("\t topic: $topic")       : _debug("\t no topic");
+    ($comment)  ? _debug("\t comment: $comment")   : _debug("\t no comment");
+    ($hide)     ? _debug("\t hide: $hide")         : _debug("\t no hide");
+    ($keepPars) ? _debug("\t keepPars: $keepPars") : _debug("\t no keepPars");
+    ($workArea) ? _debug("\t workArea: $workArea") : _debug("\t no workArea");
+
     # Protect against evil filenames - especially for out temp file.
-    # In a future release we can use Foswiki::Func::sanitizeAttachmentName
-    # e.g. my ( $fileName, $orgName ) = Foswiki::Func::sanitizeAttachmentName( $attrFileName );
-    # For now we will stick to handcrafted code
-    
-    my $fileName = $attrFileName;
-    $fileName =~ /\.*([ \w_.\-]+)$/go;
-    $fileName = $1;
-    
-    # Change spaces to underscore
-    $fileName =~ s/ /_/go;
-    # Strip dots and slashes at start
-    # untaint at the same time
-    $fileName =~ s/^([\.\/\\]*)*(.*?)$/$2/go;
-    # Remove problematic chars
-    $fileName =~ s/$Foswiki::cfg{NameFilter}//goi;
-    # Append .txt to files like we do to normal attachments
-    $fileName =~ s/$Foswiki::cfg{UploadFilter}/$1\.txt/goi;
-        
-    # Temp file in workarea - Filename + 9 digits to avoid race condition 
-    my $tempName = $workArea . '/' . $fileName . int(rand(1000000000));
+    my ( $fileName, $orgName ) =
+      Foswiki::Func::sanitizeAttachmentName($attrFileName);
+    _debug("\t fileName=$fileName");
+
+    # Temp file in workarea - Filename + 9 digits to avoid race condition
+    my $tempName = $workArea . '/' . $fileName . int( rand(1000000000) );
+    _debug("\t tempName: $tempName");
 
     # Turn most TML to text
-    my $content = Foswiki::Func::expandCommonVariables($inContent, $topic, $web);
+    my $content =
+      Foswiki::Func::expandCommonVariables( $inContent, $topic, $web );
 
     # Turn paragraphs, nops, and bracket links into plain text
     unless ($keepPars) {
-	    $content =~ s/<p\s*\/>/\n/go;
-	    $content =~ s/<nop>//goi;
-	    $content =~ s/\[\[.+?\]\[(.+?)\]\]/$1/go;
-	    $content =~ s/\[\[(.+?)\]\]/$1/go;
+        $content =~ s/<p\s*\/>/\n/go;
+        $content =~ s/<nop>//goi;
+        $content =~ s/\[\[.+?\]\[(.+?)\]\]/$1/go;
+        $content =~ s/\[\[(.+?)\]\]/$1/go;
     }
 
-    Foswiki::Func::writeDebug("tempName: $tempName") if $debug;
-    
-    # Saving temporary file
-    Foswiki::Func::saveFile($tempName, $content);
+    # strip spaces from content
+    $content =~ s/^[[:space:]]+//s;    # trim at start
+    $content =~ s/[[:space:]]+$//s;    # trim at end
+    ($content) ? _debug("\t content: $content") : _debug("\t no content");
 
-    my @stats = stat $tempName;
+    # Saving temporary file
+    Foswiki::Func::saveFile( $tempName, $content );
+
+    my @stats    = stat $tempName;
     my $fileSize = $stats[7];
     my $fileDate = $stats[9];
-    
-    Foswiki::Func::saveAttachment($web, $topic, $fileName, { file => $tempName,
-                                                           filedate => $fileDate,
-                                                           filesize => $fileSize,
-                                                           filepath => $fileName,
-                                                           comment => $comment,
-                                                           hide => $hide
-                                                         });
+
+    Foswiki::Func::saveAttachment(
+        $web, $topic,
+        $fileName,
+        {
+            file     => $tempName,
+            filedate => $fileDate,
+            filesize => $fileSize,
+            filepath => $fileName,
+            comment  => $comment,
+            hide     => $hide
+        }
+    );
 
     # Delete temporary file
-    unlink($tempName) if( $tempName && -e $tempName );
-    
-    return "";
+    unlink($tempName) if ( $tempName && -e $tempName );
+
+    return '';
+}
+
+=pod
+
+writes a debug message if the $debug flag is set
+
+=cut
+
+sub _debug {
+    my ($text) = @_;
+
+    Foswiki::Func::writeDebug("$pluginName; $text")
+      if $Foswiki::cfg{Plugins}{AttachContentPlugin}{Debug};
 }
 
 1;
