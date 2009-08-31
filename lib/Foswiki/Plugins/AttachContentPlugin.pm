@@ -33,7 +33,7 @@ our $RELEASE = '2.3';
 
 # Short description of this plugin
 # One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
-our $SHORT_DESCRIPTION  = 'Saves dynamic topic text to an attachment';
+our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 
 # Name of this Plugin, only used in this module
