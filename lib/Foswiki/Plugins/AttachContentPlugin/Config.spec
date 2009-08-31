@@ -4,7 +4,7 @@
 # Enable debugging (debug messages will be written to data/debug.txt)
 $Foswiki::cfg{Plugins}{AttachContentPlugin}{Debug} = 0;
 # **BOOLEAN**
-# By default, keep paragraph  <code><p /></code> tags, <code><nop></code> tags, and square bracket type links (can be specified for each <code>ATTACHCONTENT</code> separately).
+# By default, keep paragraph <code>&lt;p /&gt;</code> tags, <code>&lt;nop&gt;</code> tags, and square bracket type links (can be specified for each <code>ATTACHCONTENT</code> separately).
 $Foswiki::cfg{Plugins}{AttachContentPlugin}{KeepPars} = 0;
 # **String 200**
 # The default comment text that will be added to saved attachments.
