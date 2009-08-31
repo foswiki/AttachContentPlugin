@@ -1,2 +1,3 @@
 data/System/AttachContentPlugin.txt  Plugin doc page
-lib/Foswiki/Plugins/AttachContentPlugin.pm  Plugin Perl module 
+lib/Foswiki/Plugins/AttachContentPlugin.pm  Plugin Perl module
+lib/Foswiki/Plugins/AttachContentPlugin/Config.spec
