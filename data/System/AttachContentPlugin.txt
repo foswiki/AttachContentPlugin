@@ -67,7 +67,6 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 ---++ Plugin Info
 
 |  Copyright: | &copy; TWiki:Main.MeredithLesly, Foswiki:Main.KennethLavrsen, Foswiki:Main.ArthurClemens |
-|  Plugin Version: | 31 Aug 2009 (2.3) |
 |  Version: | %$VERSION% |
 |  Release: | %$RELEASE% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
