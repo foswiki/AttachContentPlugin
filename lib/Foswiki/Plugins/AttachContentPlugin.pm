@@ -29,7 +29,7 @@ use Foswiki::Func;
 # status of the plugin. It is used by the build automation tools, so
 # you should leave it alone.
 our $VERSION = '$Rev: 11069$';
-our $RELEASE = '2.3.1';
+our $RELEASE = '2.3.2';
 
 # Short description of this plugin
 # One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:

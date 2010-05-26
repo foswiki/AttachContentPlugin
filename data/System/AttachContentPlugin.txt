@@ -1,5 +1,6 @@
-%META:TOPICINFO{author="ProjectContributor" date="1176591878" format="1.1" reprev="1.1" version="1.1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1127466547" format="1.1" reprev="1.1" version="1.1"}%
 ---+!! Attach Content Plugin
+
 %$SHORTDESCRIPTION%
 
 %TOC%
@@ -12,8 +13,7 @@ Pass filename, topic, web or comment as parameters.
 
 The current version only refreshes the attachment when the topic is saved. Obviously this means that the attachment can get out of synch if, for example, it explicitly or implicitly refers to other topics.
 
-This plugin is written specifically to be able to put css into topic(s) and still be able to have efficient stylesheets: i.e., without the overhead of Foswiki processing. The feature can be used for many other things where you want Foswiki to generate a plain text file a smart way. %BR%
-For example: write a =SEARCH= in a topic and save the search results to an XML file. The XML data can be used for efficient look-up.
+This plugin is written specifically to be able to put css into topic(s) and still be able to have efficient stylesheets: i.e., without the overhead of Foswiki processing. The feature can be used for many other things where you want Foswiki to generate a plain text file a smart way. %BR% For example: write a =SEARCH= in a topic and save the search results to an XML file. The XML data can be used for efficient look-up.
 
 ---++ Syntax Rules
 
@@ -29,14 +29,25 @@ You can pass a number of parameters:
 
 ---+++ Parameters
 | *Parameter* | *Description* | *Default* | *Example* |
-| =topic=       | Topic to save the attachment to.  | - (the current topic is used) | =topic="WebHome"= |
-| =web=         | Web where the save topic is located.  | - (the current Web is used) | =web="Main"= |
-| =comment=     | Attachment comment text.  | the default ={AttachmentComment}= text in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]]  | =comment="User data as of %<nop>DATE%"= |
-| =hide=        | Use =hide="on"= to hide the attachment in normal topic view.  | =off= | =hide="on"= |
-| =keeppars=    | Keep paragraph =&lt;p /&gt;= tags, =&lt;nop&gt;= tags, and square bracket type links | the default ={KeepPars}= text in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]] | =keeppars="on"= |
+| =topic=  | Topic to save the attachment to.  | - (the current topic is used) | =topic="WebHome"= |
+| =web=  | Web where the save topic is located.  | - (the current Web is used) | =web="Main"= |
+| =comment=  | Attachment comment text.  | the default ={AttachmentComment}= text in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]]  | =comment="User data as of %<nop>DATE%"= |
+| =hide=  | Use =hide="on"= to hide the attachment in normal topic view.  | =off= | =hide="on"= |
+| =keeppars=  | Keep paragraph =&lt;p /&gt;= tags, =&lt;nop&gt;= tags, and square bracket type links | the default ={KeepPars}= text in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]] | =keeppars="on"= |
 | =hidecontent= | Hide content from view. | - (the "content-to-be-saved" is visible) | =hidecontent="on"= |
-
+ 
 ---++ Examples
+
+---+++ Adding a Save button to the topic.
+
+These examples add a "Save" button to force a save of the topic and update the attachment.  Note that with versions of Foswiki since 1.0.4, it is not possible to initiate a save from a simple HTML link - which causes a "GET".  Save can only be initiated from a POST operation done using a HTML form.  The following sample form is used to create the button:
+
+<verbatim>
+<form action="%SCRIPTURL{save}%/%WEB%/%TOPIC%" method="post">
+    <input type="hidden" name="action" value="action_save=1" />
+    <input type="submit" class="foswikiButton" value="Save the topic" />
+</form>
+</verbatim>
 
 ---+++ Creating a color scheme
 
@@ -45,7 +56,7 @@ See: PatternSkinColorSettings. This topic uses !AttachContentPlugin to write a C
 #UserDataXml
 ---+++ User data XML
 
-<a href="%SCRIPTURL{save}%/%WEB%/%TOPIC%?action_save=1">Update user data XML</a>
+%IF{"context AttachContentPluginEnabled" then='<form action="%SCRIPTURL{save}%/%WEB%/%TOPIC%" method="post"><input type="hidden" name="action" value="action_save=1" /><input type="submit" class="foswikiButton" value="Save the topic" /></form> This will generate an [[%PUBURLPATH%/%WEB%/%TOPIC%/userdata.xml][attachment]] to this topic. Content will be a xml file of users registered to this installation.' else='Install !AttachContentPlugin to be able to save this topic. On saving, an attachment will be created to this topic.'}%
 
 <verbatim>
 %STARTATTACH{"userdata.xml" comment="User data as of %DATE%"}%
@@ -56,13 +67,32 @@ See: PatternSkinColorSettings. This topic uses !AttachContentPlugin to write a C
 %ENDATTACH%
 </verbatim>
 
+%X% Note that the STARTATTACH and ENDATTACH macros are not shown, so the actual content of the above "live" Attach Content block (spaced out for easier readability) is:
+
+<pre>
+%START<nop>ATTACH{"userdata.xml" comment="User data as of %D<nop>ATE%"}%
+&lt;?xml version="1.0" encoding="ISO-8859-1"?>
+&lt;users>
+%S<nop>EARCH{ "[F]irstName.*value=.*()" web="%M<nop>AINWEB%" type="regex" nonoise="on" 
+   excludetopic="UserForm,ProjectContributor,WikiGuest,UnknownUser" 
+   format="&lt;user>&lt;firstname>&lt;![CDATA[$formfield(FirstName)]]>&lt/firstname>
+               &lt;lastname>&lt;![CDATA[$formfield(LastName)]]>&lt;/lastname>
+               &lt;url>&lt;![CDATA[%SC<nop>RIPTURL{view}%/%W<nop>EB%/$topic]]>&lt;/url>
+           &lt;/user>"
+ }%
+&lt;/users>
+%END<nop>ATTACH%
+</pre>
+
+
 #PluginSettings
 ---++ Plugin Settings
+
 After installation, configure this plugin by changing settings in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]].
 
 ---++ Plugin Installation Instructions
-%$INSTALL_INSTRUCTIONS%
 
+%$INSTALL_INSTRUCTIONS%
 
 ---++ Plugin Info
 
@@ -70,6 +100,7 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 |  Version: | %$VERSION% |
 |  Release: | %$RELEASE% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  25 May 2010 (2.3.2) | Foswikitask:Item8579 - Fix example to resolve save errors | 
 |  31 Aug 2009 (2.3) | Arthur Clemens: Added param =hidecontent=. Moved plugin settings to configure.  |
 |  23 Nov 2008 (2.2.1) | Foswiki compatible. |
 |  16 Apr 2007 (2.2.0) | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
