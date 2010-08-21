@@ -100,6 +100,7 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 |  Version: | %$VERSION% |
 |  Release: | %$RELEASE% |
 |  Change History: | <!-- versions below in reverse order -->&nbsp; |
+|  21 Aug 2010 (2.3.3) | Created stub handlers =_startAttach= and =_endAttach=. |
 |  25 May 2010 (2.3.2) | Foswikitask:Item8579 - Fix example to resolve save errors | 
 |  31 Aug 2009 (2.3) | Arthur Clemens: Added param =hidecontent=. Moved plugin settings to configure.  |
 |  23 Nov 2008 (2.2.1) | Foswiki compatible. |

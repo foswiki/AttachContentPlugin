@@ -29,7 +29,7 @@ use Foswiki::Func;
 # status of the plugin. It is used by the build automation tools, so
 # you should leave it alone.
 our $VERSION = '$Rev: 11069$';
-our $RELEASE = '2.3.2';
+our $RELEASE = '2.3.3';
 
 # Short description of this plugin
 # One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
@@ -57,6 +57,9 @@ sub initPlugin {
 
     return 1;
 }
+
+sub _startAttach {}
+sub _endAttach {}
 
 =pod
 
