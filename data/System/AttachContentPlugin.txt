@@ -84,34 +84,43 @@ See: PatternSkinColorSettings. This topic uses !AttachContentPlugin to write a C
 %END<nop>ATTACH%
 </pre>
 
-
-#PluginSettings
----++ Plugin Settings
-
-After installation, configure this plugin by changing settings in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]].
-
----++ Plugin Installation Instructions
+---++ Installation Instructions
 
 %$INSTALL_INSTRUCTIONS%
 
----++ Plugin Info
+#PluginSettings
+---++ Settings
 
-|  Copyright: | &copy; TWiki:Main.MeredithLesly, Foswiki:Main.KennethLavrsen, Foswiki:Main.ArthurClemens |
-|  Version: | %$VERSION% |
-|  Release: | %$RELEASE% |
-|  Change History: | <!-- versions below in reverse order -->&nbsp; |
-|  21 Aug 2010 (2.3.3) | Created stub handlers =_startAttach= and =_endAttach=. |
-|  25 May 2010 (2.3.2) | Foswikitask:Item8579 - Fix example to resolve save errors | 
+After installation, configure this plugin by changing settings in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]].
+
+---++ Dependencies
+%$DEPENDENCIES%
+
+---++ Change History
+
+%TABLE{columnwidths="7em" tablewidth="100%"}%
+|  25 Sep 2015 (2.34) | Foswikitask:Item13747 - fixed unescaped left braces; \
+                        use CPAN:File::Temp for temporary files; check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
+                        check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
+                        remove SVN tags to make plugin releasable again; \
+                        use floats for version tags; \
+                        normalize web,topic params to STARTATTACH; \
+                        remove use of deprecated saveTopicText api |
+|  21 Aug 2010 (2.33) | Created stub handlers =_startAttach= and =_endAttach=. |
+|  25 May 2010 (2.32) | Foswikitask:Item8579 - Fix example to resolve save errors | 
 |  31 Aug 2009 (2.3) | Arthur Clemens: Added param =hidecontent=. Moved plugin settings to configure.  |
-|  23 Nov 2008 (2.2.1) | Foswiki compatible. |
-|  16 Apr 2007 (2.2.0) | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
-|  15 Apr 2007 (2.1.0) | Arthur Clemens: added parameters =web=, =topic=, =comment= and =hide=. Plugin tags are removed from view. Added configurable default comment. |
+|  23 Nov 2008 (2.21) | Foswiki compatible. |
+|  16 Apr 2007 (2.20) | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
+|  15 Apr 2007 (2.10) | Arthur Clemens: added parameters =web=, =topic=, =comment= and =hide=. Plugin tags are removed from view. Added configurable default comment. |
 |  19 Oct 2006 (2.0) | Foswiki:Main.KennethLavrsen<br />Fixed major security issue. Original version allowed /../ in the filename so files could be stored everywhere<br />Plugin now cleans up the its work area and no longer leaves temporary files<br />Temporary filenames made pseudo random to avoid race condition<br />Plugin now also removed nops and TML square bracket links<br />Attachment is no longer saved when uploading other files and changing attributes. |
 |  09 Feb 2006 (1.0) | Initial version |
-|  CPAN Dependencies: | none |
-|  Other Dependencies: | none |
-|  Perl Version: | 5.005 |
-|  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Home: | http://foswiki.org/Extensions/%TOPIC% |
-|  Support: | http://foswiki.org/Support/%TOPIC% |
 
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="ProjectContributor"}%
+%META:FIELD{name="Copyright" title="Copyright" value="&copy; TWiki:Main.MeredithLesly, Foswiki:Main.KennethLavrsen, Foswiki:Main.ArthurClemens"}%
+%META:FIELD{name="Home" title="Home" value="http://foswiki.org/Extensions/%TOPIC%"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/AttachContentPlugin"}%
+%META:FIELD{name="Support" title="Support" value="http://foswiki.org/Support/%TOPIC%"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%

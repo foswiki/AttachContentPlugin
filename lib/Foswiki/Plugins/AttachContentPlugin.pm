@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (c) 2008 Foswiki Contributors
+# Copyright (c) 2015 Foswiki Contributors
 # Copyright (c) 2007,2009 Arthur Clemens
 # Copyright (c) 2006 Meredith Lesly, Kenneth Lavrsen
 # and TWiki Contributors. All Rights Reserved.
@@ -23,16 +23,12 @@ package Foswiki::Plugins::AttachContentPlugin;
 
 # Always use strict to enforce variable scoping
 use strict;
-use Foswiki::Func;
+use warnings;
+use Foswiki::Func ();
+use File::Temp();
 
-# This should always be $Rev: 11069$ so that Foswiki can determine the checked-in
-# status of the plugin. It is used by the build automation tools, so
-# you should leave it alone.
-our $VERSION = '$Rev: 11069$';
-our $RELEASE = '2.3.3';
-
-# Short description of this plugin
-# One line description, is shown in the %SYSTEMWEB%.TextFormattingRules topic:
+our $VERSION = '2.34';
+our $RELEASE = '24 Sep 2015';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -78,7 +74,7 @@ sub beforeCommonTagsHandler {
     #my ($text, $topic, $web, $meta ) = @_;
 
     $_[0] =~
-s/%STARTATTACH{(.*?)}%(.*?)%ENDATTACH%/&_handleAttachBeforeRendering($1, $2, $_[2], $_[1])/ges;
+s/%STARTATTACH\{(.*?)\}%(.*?)%ENDATTACH%/&_handleAttachBeforeRendering($1, $2, $_[2], $_[1])/ges;
 }
 
 =pod
@@ -96,6 +92,7 @@ sub _handleAttachBeforeRendering {
       Foswiki::Func::expandCommonVariables( $inAttr, $inTopic, $inWeb );
     my %params = Foswiki::Func::extractParameters($attrs);
     return '' if Foswiki::Func::isTrue( $params{'hidecontent'} );
+    $inContent =~ s/^\s+|\s+$//g;
     return $inContent;
 }
 
@@ -124,7 +121,7 @@ sub afterSaveHandler {
     _debug("sub afterSaveHandler( $_[2].$_[1] )");
 
     $_[0] =~
-s/%STARTATTACH{(.*?)}%(.*?)%ENDATTACH%/&_handleAttach($1, $2, $_[2], $_[1])/ges;
+s/%STARTATTACH\{(.*?)\}%(.*?)%ENDATTACH%/&_handleAttach($1, $2, $_[2], $_[1])/ges;
     $savedAlready = 0;
 
     return;
@@ -150,12 +147,20 @@ sub _handleAttach {
 
     my $web   = $params{'web'}   || $inWeb;
     my $topic = $params{'topic'} || $inTopic;
+    ($web, $topic) = Foswiki::Func::normalizeWebTopicName($web, $topic);
+
+    my $user = Foswiki::Func::getWikiName();
+    unless (Foswiki::Func::checkAccessPermission("CHANGE", $user, undef, $topic, $web)) {
+      _debug("user $user doesn't have change access on $web.$topic");
+      return '';
+    }
+
     my $comment = $params{'comment'}
       || $Foswiki::cfg{Plugins}{AttachContentPlugin}{AttachmentComment};
     my $hide = Foswiki::Func::isTrue( $params{'hide'} );
     my $keepPars =
-      Foswiki::Func::isTrue( $params{'keeppars'}
-          || $Foswiki::cfg{Plugins}{AttachContentPlugin}{KeepPars} );
+      Foswiki::Func::isTrue( $params{'keeppars'}, $Foswiki::cfg{Plugins}{AttachContentPlugin}{KeepPars} );
+
     my $workArea = Foswiki::Func::getWorkArea($pluginName);
 
     ($web)      ? _debug("\t web: $web")           : _debug("\t no web");
@@ -170,8 +175,8 @@ sub _handleAttach {
       Foswiki::Func::sanitizeAttachmentName($attrFileName);
     _debug("\t fileName=$fileName");
 
-    # Temp file in workarea - Filename + 9 digits to avoid race condition
-    my $tempName = $workArea . '/' . $fileName . int( rand(1000000000) );
+    my $fh = File::Temp->new();
+    my $tempName = $fh->filename;
     _debug("\t tempName: $tempName");
 
     # Turn most TML to text
@@ -210,9 +215,6 @@ sub _handleAttach {
             hide     => $hide
         }
     );
-
-    # Delete temporary file
-    unlink($tempName) if ( $tempName && -e $tempName );
 
     return '';
 }

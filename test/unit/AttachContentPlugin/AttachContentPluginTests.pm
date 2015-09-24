@@ -59,7 +59,7 @@ My content
 after
 HERE
     my $UI_FN = $this->getUIFn('save');
-    Foswiki::Func::saveTopicText( $this->{test_web}, "MyTopic", $testText );
+    Foswiki::Func::saveTopic( $this->{test_web}, "MyTopic", undef, $testText );
     my $query = new Unit::Request(
         {
             action => ['save'],
