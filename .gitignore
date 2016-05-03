@@ -1,8 +1,8 @@
 *.swp
-AttachContentPlugin.md5
-AttachContentPlugin.sha1
-AttachContentPlugin.tgz
-AttachContentPlugin.txt
-AttachContentPlugin.zip
-AttachContentPlugin_installer
-AttachContentPlugin_installer.pl
+/AttachContentPlugin.md5
+/AttachContentPlugin.sha1
+/AttachContentPlugin.tgz
+/AttachContentPlugin.txt
+/AttachContentPlugin.zip
+/AttachContentPlugin_installer
+/AttachContentPlugin_installer.pl

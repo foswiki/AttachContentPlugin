@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (c) 2015 Foswiki Contributors
+# Copyright (c) 2015,2016 Foswiki Contributors
 # Copyright (c) 2007,2009 Arthur Clemens
 # Copyright (c) 2006 Meredith Lesly, Kenneth Lavrsen
 # and TWiki Contributors. All Rights Reserved.
@@ -26,9 +26,10 @@ use strict;
 use warnings;
 use Foswiki::Func ();
 use File::Temp();
+use Digest::MD5 qw(md5_hex);
 
-our $VERSION = '2.34';
-our $RELEASE = '24 Sep 2015';
+our $VERSION = '2.40';
+our $RELEASE = '03 May 2016';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -175,10 +176,6 @@ sub _handleAttach {
       Foswiki::Func::sanitizeAttachmentName($attrFileName);
     _debug("\t fileName=$fileName");
 
-    my $fh = File::Temp->new();
-    my $tempName = $fh->filename;
-    _debug("\t tempName: $tempName");
-
     # Turn most TML to text
     my $content =
       Foswiki::Func::expandCommonVariables( $inContent, $topic, $web );
@@ -196,25 +193,36 @@ sub _handleAttach {
     $content =~ s/[[:space:]]+$//s;    # trim at end
     ($content) ? _debug("\t content: $content") : _debug("\t no content");
 
-    # Saving temporary file
-    Foswiki::Func::saveFile( $tempName, $content );
+    my $newMD5 = md5_hex($content);
+    my $oldContent = Foswiki::Func::readAttachment($web, $topic, $fileName);
+    my $oldMD5 = md5_hex($oldContent);
 
-    my @stats    = stat $tempName;
-    my $fileSize = $stats[7];
-    my $fileDate = $stats[9];
+    if ($newMD5 ne $oldMD5) {
 
-    Foswiki::Func::saveAttachment(
-        $web, $topic,
-        $fileName,
-        {
-            file     => $tempName,
-            filedate => $fileDate,
-            filesize => $fileSize,
-            filepath => $fileName,
-            comment  => $comment,
-            hide     => $hide
-        }
-    );
+      my $fh = File::Temp->new();
+      my $tempName = $fh->filename;
+      _debug("\t tempName: $tempName");
+
+      # Saving temporary file
+      Foswiki::Func::saveFile( $tempName, $content, 1 );
+
+      my @stats    = stat $tempName;
+      my $fileSize = $stats[7];
+      my $fileDate = $stats[9];
+
+      Foswiki::Func::saveAttachment(
+          $web, $topic,
+          $fileName,
+          {
+              file     => $tempName,
+              filedate => $fileDate,
+              filesize => $fileSize,
+              filepath => $fileName,
+              comment  => $comment,
+              hide     => $hide
+          }
+      );
+    }
 
     return '';
 }
