@@ -27,9 +27,10 @@ use warnings;
 use Foswiki::Func ();
 use File::Temp();
 use Digest::MD5 qw(md5_hex);
+use Encode qw();
 
-our $VERSION = '2.40';
-our $RELEASE = '03 May 2016';
+our $VERSION = '2.41';
+our $RELEASE = '13 Jun 2016';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 
@@ -193,8 +194,8 @@ sub _handleAttach {
     $content =~ s/[[:space:]]+$//s;    # trim at end
     ($content) ? _debug("\t content: $content") : _debug("\t no content");
 
-    my $newMD5 = md5_hex($content);
-    my $oldContent = Foswiki::Func::readAttachment($web, $topic, $fileName);
+    my $newMD5 = md5_hex(_encode($content));
+    my $oldContent = Foswiki::Func::readAttachment($web, $topic, $fileName) || '';
     my $oldMD5 = md5_hex($oldContent);
 
     if ($newMD5 ne $oldMD5) {
@@ -238,6 +239,12 @@ sub _debug {
 
     Foswiki::Func::writeDebug("$pluginName; $text")
       if $Foswiki::cfg{Plugins}{AttachContentPlugin}{Debug};
+}
+
+sub _encode {
+    my ($text) = @_;
+
+    return Encode::encode($Foswiki::cfg{Site}{CharSet} || 'utf-8', $text);
 }
 
 1;

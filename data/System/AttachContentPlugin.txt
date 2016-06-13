@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1462265132" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1465812073" format="1.1" version="1"}%
 ---+!! Attach Content Plugin
 %FORMFIELD{"Description"}%
 
@@ -98,6 +98,7 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  13 Jun 2016 (2.41) | Foswikitasl:Item14095 - fixed saving attachments with unicode chars in it |
 |  03 May 2016 (2.40) | Foswikitask:Item14062 - only attach content when it actually changed;\
                         Foswikitask:Item11782 - make sure the file is proper utf8 on unicode Foswiki |
 |  25 Sep 2015 (2.34) | Foswikitask:Item13747 - fixed unescaped left braces; \
@@ -120,9 +121,9 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 %META:FIELD{name="Author" title="Author" value="ProjectContributor"}%
 %META:FIELD{name="Copyright" title="Copyright" value="&copy; TWiki:Main.MeredithLesly, Foswiki:Main.KennethLavrsen, Foswiki:Main.ArthurClemens"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
-%META:FIELD{name="Home" title="Home" value="https://foswiki.org/Extensions/%TOPIC%"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/AttachContentPlugin"}%
-%META:FIELD{name="Support" title="Support" value="https://foswiki.org/Support/%TOPIC%"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
 %META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
