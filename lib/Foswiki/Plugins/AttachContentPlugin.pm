@@ -184,9 +184,9 @@ sub _handleAttach {
     # Turn paragraphs, nops, and bracket links into plain text
     unless ($keepPars) {
         $content =~ s/<p\s*\/>/\n/go;
-        $content =~ s/<nop>//goi;
         $content =~ s/\[\[.+?\]\[(.+?)\]\]/$1/go;
         $content =~ s/\[\[(.+?)\]\]/$1/go;
+        $content =~ s/<nop>//goi;
     }
 
     # strip spaces from content
