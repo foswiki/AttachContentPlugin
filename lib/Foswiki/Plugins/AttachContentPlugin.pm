@@ -29,8 +29,8 @@ use File::Temp();
 use Digest::MD5 qw(md5_hex);
 use Encode qw();
 
-our $VERSION = '2.41';
-our $RELEASE = '13 Jun 2016';
+our $VERSION = '2.42';
+our $RELEASE = '03 Feb 2021';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 
