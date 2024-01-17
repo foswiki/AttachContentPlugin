@@ -1,12 +1,13 @@
 package AttachContentPluginTests;
 
-use FoswikiFnTestCase;
-our @ISA = qw( FoswikiFnTestCase );
-
 use strict;
 use warnings;
+
+use FoswikiFnTestCase;
 use Error qw( :try );
 use Foswiki;
+
+our @ISA = qw( FoswikiFnTestCase );
 
 my $DEBUG = 0;
 

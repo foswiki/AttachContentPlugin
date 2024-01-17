@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (c) 2015,2016 Foswiki Contributors
+# Copyright (c) 2015-2024 Foswiki Contributors
 # Copyright (c) 2007,2009 Arthur Clemens
 # Copyright (c) 2006 Meredith Lesly, Kenneth Lavrsen
 # and TWiki Contributors. All Rights Reserved.
@@ -29,8 +29,8 @@ use File::Temp();
 use Digest::MD5 qw(md5_hex);
 use Encode qw();
 
-our $VERSION = '2.42';
-our $RELEASE = '03 Feb 2021';
+our $VERSION = '2.43';
+our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
 

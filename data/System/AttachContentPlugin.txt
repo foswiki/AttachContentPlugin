@@ -98,7 +98,8 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
-|  03 Feb 2021 (2.42) | Foswikitasl:Item15015 - fixed escape the removal of bracket links |
+|  14 Jan 2024 (2.43) | Foswikitask:Item15244 - code improvements such as use of strict and warnings in perl |
+|  03 Feb 2021 (2.42) | Foswikitask:Item15015 - fixed escape the removal of bracket links |
 |  13 Jun 2016 (2.41) | Foswikitask:Item14095 - fixed saving attachments with unicode chars in it |
 |  03 May 2016 (2.40) | Foswikitask:Item14062 - only attach content when it actually changed;\
                         Foswikitask:Item11782 - make sure the file is proper utf8 on unicode Foswiki |
@@ -128,4 +129,3 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%25TOPIC%25"}%
 %META:FIELD{name="Support" title="Support" value="Foswiki:Support/%25TOPIC%25"}%
-%META:FILEATTACHMENT{name="userdata.xml" attachment="userdata.xml" attr="" comment="User data as of 03 Feb 2021" date="1612318954" path="userdata.xml" size="205" user="BaseUserMapping_333" version="1"}%

@@ -1,0 +1,2 @@
+File::Temp,>0,cpan,Required
+Digest::MD5,>=2.36,cpan,Required
