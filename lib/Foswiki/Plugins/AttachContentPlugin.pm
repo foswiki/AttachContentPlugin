@@ -29,7 +29,7 @@ use File::Temp();
 use Digest::MD5 qw(md5_hex);
 use Encode qw();
 
-our $VERSION = '2.43';
+our $VERSION = '2.44';
 our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION  = 'Saves dynamic topic text to an attachment';
 our $NO_PREFS_IN_TOPIC = 1;
@@ -90,8 +90,9 @@ Removes content if param hidecontent is true.
 sub _handleAttachBeforeRendering {
     my ( $inAttr, $inContent, $inWeb, $inTopic ) = @_;
 
-    my $attrs =
-      Foswiki::Func::expandCommonVariables( $inAttr, $inTopic, $inWeb );
+    my $attrs = $inAttr;
+    $attrs = Foswiki::Func::expandCommonVariables( $attrs, $inTopic, $inWeb ) if $attrs =~ /%/;
+
     my %params = Foswiki::Func::extractParameters($attrs);
     return '' if Foswiki::Func::isTrue( $params{'hidecontent'} );
     $inContent =~ s/^\s+|\s+$//g;
@@ -140,8 +141,9 @@ sub _handleAttach {
 
     _debug("sub handleAttach; attr=$inAttr; content=$inContent");
 
-    my $attrs =
-      Foswiki::Func::expandCommonVariables( $inAttr, $inTopic, $inWeb );
+    my $attrs = $inAttr;
+    $attrs = Foswiki::Func::expandCommonVariables( $attrs, $inTopic, $inWeb ) if $attrs =~ /%/;
+
     my %params = Foswiki::Func::extractParameters($attrs);
 
     my $attrFileName = $params{_DEFAULT};
@@ -178,8 +180,8 @@ sub _handleAttach {
     _debug("\t fileName=$fileName");
 
     # Turn most TML to text
-    my $content =
-      Foswiki::Func::expandCommonVariables( $inContent, $topic, $web );
+    my $content = $inContent;
+    $content = Foswiki::Func::expandCommonVariables( $content, $topic, $web ) if $content =~ /%/;
 
     # Turn paragraphs, nops, and bracket links into plain text
     unless ($keepPars) {

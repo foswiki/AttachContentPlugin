@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="BaseUserMapping_333" comment="" date="1612318954" format="1.1" reprev="2" version="2"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1734610135" format="1.1"  version="1"}%
 ---+!! Attach Content Plugin
 %FORMFIELD{"Description"}%
 
@@ -34,7 +34,7 @@ You can pass a number of parameters:
 | =hide=  | Use =hide="on"= to hide the attachment in normal topic view.  | =off= | =hide="on"= |
 | =keeppars=  | Keep paragraph =&lt;p /&gt;= tags, =&lt;nop&gt;= tags, and square bracket type links | the default ={KeepPars}= text in [[%SCRIPTURL{configure}%/#AttachContentPlugin$Extensions][configure]] | =keeppars="on"= |
 | =hidecontent= | Hide content from view. | - (the "content-to-be-saved" is visible) | =hidecontent="on"= |
- 
+
 ---++ Examples
 
 ---+++ Adding a Save button to the topic.
@@ -55,7 +55,13 @@ See: PatternSkinColorSettings. This topic uses !AttachContentPlugin to write a C
 #UserDataXml
 ---+++ User data XML
 
-%IF{"context AttachContentPluginEnabled" then='<form action="%SCRIPTURL{save}%/%WEB%/%TOPIC%" method="post"><input type="hidden" name="action" value="action_save=1" /><input type="submit" class="foswikiButton" value="Save the topic" /></form> This will generate an [[%PUBURLPATH%/%WEB%/%TOPIC%/userdata.xml][attachment]] to this topic. Content will be a xml file of users registered to this installation.' else='Install !AttachContentPlugin to be able to save this topic. On saving, an attachment will be created to this topic.'}%
+%IF{"context AttachContentPluginEnabled and not context static" 
+   then="<form action='%SCRIPTURL{save}%/%WEB%/%TOPIC%' method='post'>
+            <input type='hidden' name='action' value='action_save=1' />
+            <input type='submit' class='foswikiButton' value='Save the topic' />
+         </form> This will generate an [[%PUBURLPATH%/%WEB%/%TOPIC%/userdata.xml][attachment]] to this topic. Content will be a xml file of users registered to this installation."
+   else="Install !AttachContentPlugin to be able to save this topic. On saving, an attachment will be created to this topic."
+}%
 
 <verbatim>
 %STARTATTACH{"userdata.xml" comment="User data as of %DATE%"}%
@@ -98,26 +104,30 @@ After installation, configure this plugin by changing settings in [[%SCRIPTURL{c
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
-|  14 Jan 2024 (2.43) | Foswikitask:Item15244 - code improvements such as use of strict and warnings in perl |
-|  03 Feb 2021 (2.42) | Foswikitask:Item15015 - fixed escape the removal of bracket links |
-|  13 Jun 2016 (2.41) | Foswikitask:Item14095 - fixed saving attachments with unicode chars in it |
-|  03 May 2016 (2.40) | Foswikitask:Item14062 - only attach content when it actually changed;\
-                        Foswikitask:Item11782 - make sure the file is proper utf8 on unicode Foswiki |
-|  25 Sep 2015 (2.34) | Foswikitask:Item13747 - fixed unescaped left braces; \
-                        use CPAN:File::Temp for temporary files; check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
-                        check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
-                        remove SVN tags to make plugin releasable again; \
-                        use floats for version tags; \
-                        normalize web,topic params to STARTATTACH; \
-                        remove use of deprecated saveTopicText api |
-|  21 Aug 2010 (2.33) | Created stub handlers =_startAttach= and =_endAttach=. |
-|  25 May 2010 (2.32) | Foswikitask:Item8579 - Fix example to resolve save errors | 
-|  31 Aug 2009 (2.3) | Arthur Clemens: Added param =hidecontent=. Moved plugin settings to configure.  |
-|  23 Nov 2008 (2.21) | Foswiki compatible. |
-|  16 Apr 2007 (2.20) | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
-|  15 Apr 2007 (2.10) | Arthur Clemens: added parameters =web=, =topic=, =comment= and =hide=. Plugin tags are removed from view. Added configurable default comment. |
-|  19 Oct 2006 (2.0) | Foswiki:Main.KennethLavrsen<br />Fixed major security issue. Original version allowed /../ in the filename so files could be stored everywhere<br />Plugin now cleans up the its work area and no longer leaves temporary files<br />Temporary filenames made pseudo random to avoid race condition<br />Plugin now also removed nops and TML square bracket links<br />Attachment is no longer saved when uploading other files and changing attributes. |
-|  09 Feb 2006 (1.0) | Initial version |
+|  19 Dec 2024 | improve performance by only calling =expandCommonVariables= when there is a chance to do so |
+|  14 Jan 2024 | Foswikitask:Item15244 - code improvements such as use of strict and warnings in perl |
+|  03 Feb 2021 | Foswikitask:Item15015 - fixed escape the removal of bracket links |
+|  13 Jun 2016 | Foswikitask:Item14095 - fixed saving attachments with unicode chars in it |
+|  03 May 2016 | Foswikitask:Item14062 - only attach content when it actually changed;\
+                 Foswikitask:Item11782 - make sure the file is proper utf8 on unicode Foswiki |
+|  25 Sep 2015 | Foswikitask:Item13747 - fixed unescaped left braces; \
+                 use CPAN:File::Temp for temporary files; check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
+                 check access rights before saving auto-created attachment to prevent an unnecessary error condition; \
+                 remove SVN tags to make plugin releasable again; \
+                 use floats for version tags; \
+                 normalize web,topic params to STARTATTACH; \
+                 remove use of deprecated saveTopicText api |
+|  21 Aug 2010 | Created stub handlers =_startAttach= and =_endAttach=. |
+|  25 May 2010 | Foswikitask:Item8579 - Fix example to resolve save errors | 
+|  31 Aug 2009 | Arthur Clemens: Added param =hidecontent=. Moved plugin settings to configure.  |
+|  23 Nov 2008 | Foswiki compatible. |
+|  16 Apr 2007 | Kenneth Lavrsen: Add added =keeppars= parameter. Settings change to being plugin settings only. Removal of plugin tags fixed so text between is still visible. |
+|  15 Apr 2007 | Arthur Clemens: added parameters =web=, =topic=, =comment= and =hide=. Plugin tags are removed from view. Added configurable default comment. |
+|  19 Oct 2006 | Kenneth Lavrsen: Fixed major security issue. Original version allowed /../ in the filename so files could be stored everywhere; \
+                 Plugin now cleans up the its work area and no longer leaves temporary files; \
+                 Temporary filenames made pseudo random to avoid race condition; \
+                 Plugin now also removed nops and TML square bracket links; Attachment is no longer saved when uploading other files and changing attributes. |
+|  09 Feb 2006 | Initial version |
 
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="ProjectContributor"}%
